@@ -96,6 +96,17 @@ export function identifyAnonymousUser(traits) {
  * @param {*} properties
  */
 export function sendTrackEvent(eventName, properties) {
+  // Handle case where analytics service hasn't been initialized yet
+  // This can happen when APP_INIT_ERROR fires and we force render in JWT mode
+  if (!service) {
+    // Try to use window.analytics as fallback (set by analytics shim)
+    if (typeof window !== 'undefined' && window.analytics && typeof window.analytics.sendTrackEvent === 'function') {
+      window.analytics.sendTrackEvent(eventName, properties);
+      return;
+    }
+    // If no fallback available, silently skip (prevents errors during initialization)
+    return;
+  }
   service.sendTrackEvent(eventName, properties);
 }
 
