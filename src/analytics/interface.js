@@ -118,6 +118,17 @@ export function sendTrackEvent(eventName, properties) {
  * @param {*} properties
  */
 export function sendPageEvent(category, name, properties) {
+  // Handle case where analytics service hasn't been initialized yet
+  // This can happen when APP_INIT_ERROR fires and we force render in JWT mode
+  if (!service) {
+    // Try to use window.analytics as fallback (set by analytics shim)
+    if (typeof window !== 'undefined' && window.analytics && typeof window.analytics.sendPageEvent === 'function') {
+      window.analytics.sendPageEvent(category, name, properties);
+      return;
+    }
+    // If no fallback available, silently skip (prevents errors during initialization)
+    return;
+  }
   service.sendPageEvent(category, name, properties);
 }
 
