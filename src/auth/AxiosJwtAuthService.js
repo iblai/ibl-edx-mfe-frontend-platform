@@ -322,9 +322,10 @@ class AxiosJwtAuthService {
 
     // The JWT access token interceptor attempts to refresh the user's jwt token
     // before any request unless the isPublic flag is set on the request config.
+    // Also skip if skipJwtTokenRefresh is set (used when using custom JWT token in Authorization header)
     const refreshAccessTokenInterceptor = createJwtTokenProviderInterceptor({
       jwtTokenService: this.jwtTokenService,
-      shouldSkip: axiosRequestConfig => axiosRequestConfig.isPublic,
+      shouldSkip: axiosRequestConfig => axiosRequestConfig.isPublic || axiosRequestConfig.skipJwtTokenRefresh,
     });
     // The CSRF token intercepter fetches and caches a csrf token for any post,
     // put, patch, or delete request. That token is then added to the request
