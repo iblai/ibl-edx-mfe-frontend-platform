@@ -26,9 +26,13 @@ const createJwtTokenProviderInterceptor = (options) => {
       return Promise.reject(requestError);
     }
 
-    // Add the proper headers to tell the server to look for the jwt cookie
-    // eslint-disable-next-line no-param-reassign
-    axiosRequestConfig.headers['USE-JWT-COOKIE'] = true;
+    // Add the proper headers to tell the server to look for the jwt cookie,
+    // unless explicitly suppressed (e.g., to avoid CORS preflight failures
+    // when the server doesn't include USE-JWT-COOKIE in Access-Control-Allow-Headers)
+    if (!axiosRequestConfig.skipUseJwtCookieHeader) {
+      // eslint-disable-next-line no-param-reassign
+      axiosRequestConfig.headers['USE-JWT-COOKIE'] = true;
+    }
     return axiosRequestConfig;
   };
 
